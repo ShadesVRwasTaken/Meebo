@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meebo Bot Host Console</title>
+<style>
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-color: #1a1a24;
+color: #ffffff;
+max-width: 600px;
+margin: 40px auto;
+padding: 20px;
+text-align: center;
+}
+h1 {
+color: #0ebd84;
+margin-bottom: 5px;
+}
+.status-card {
+background-color: #242432;
+border-radius: 12px;
+padding: 20px;
+margin-top: 20px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+border: 1px solid #333344;
+}
+.warning {
+color: #ff9800;
+font-weight: bold;
+font-size: 0.9em;
+}
+.emergency-tip {
+margin-top: 20px;
+font-size: 0.85em;
+color: #8a8a9e;
+background: #2b1d24;
+padding: 10px;
+border-radius: 6px;
+border-left: 4px solid #f44336;
+}
+</style>
+</head>
+<body>
+
+<h1>🤖 Meebo Live Host</h1>
+<p>Your browser-based Matrix learning chatbot</p>
+
+<div class="status-card">
+<p class="warning">⚠️ CRITICAL: Keep this web browser tab open!</p>
+<p>If you close, sleep, or refresh this tab, Meebo will disconnect from Element.</p>
+</div>
+
+<div class="emergency-tip">
+<strong>🚨 Emergency Control Trigger:</strong><br>
+Type <code>meebo wipe memory</code> inside your Element room to instantly clear his database.
+</div>
+
+<!-- This script link pulls in Meebo's brain and executes the Matrix SDK connection -->
+<script type="module" src="meebo.js"></script>
+
+</body>
+</html>
+
