@@ -4,7 +4,7 @@
 const HOMESERVER_URL = "https://matrix.org";
 const BOT_USERNAME = "@meebo:matrix.org";
 const BOT_PASSWORD = "ColdLeg6932";
-const OWNER_USERNAME = "@meebo:matrix.org";
+const OWNER_USERNAME = "@ilikegrapes:matrix.org";
 
 // 2. Meebo's Brain & Storage
 let brain = {};
