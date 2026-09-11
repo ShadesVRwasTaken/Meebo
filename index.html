@@ -7,10 +7,11 @@
 <style>
 body { font-family: sans-serif; background-color: #1a1a24; color: #fff; max-width: 600px; margin: 40px auto; padding: 20px; text-align: center; }
 h1 { color: #0ebd84; }
-.status-card { background-color: #242432; border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid #33344; }
-/* 📺 THIS IS YOUR NEW SCREEN-BASED CONSOLE LOG */
-#screen-log { background: #000; color: #0f0; text-align: left; font-family: monospace; padding: 15px; border-radius: 8px; max-height: 250px; overflow-y: auto; white-space: pre-wrap; margin-top: 20px; font-size: 0.85em; }
+.status-card { background-color: #242432; border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid #333344; }
+#screen-log { background: #000; color: #0f0; text-align: left; font-family: monospace; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; margin-top: 20px; font-size: 0.85em; }
 </style>
+<!-- 📦 This loads the official browser bundle safely -->
+<script src="https://jsdelivr.net"></script>
 </head>
 <body>
 
@@ -22,28 +23,20 @@ h1 { color: #0ebd84; }
 <h3>📡 Live Connection Logs:</h3>
 <div id="screen-log">Initializing log window...</div>
 
-<!-- Script to override the browser's console so it displays on screen -->
 <script>
 const logDiv = document.getElementById('screen-log');
 logDiv.innerHTML = "=== Meebo Boot Sequence ===\n";
 
-// This hijacks console.log so it draws on the page instead
-const oldLog = console.log;
-console.log = function(...args) {
-oldLog(...args);
-logDiv.innerHTML += `🟢 ${args.join(' ')}\n`;
-logDiv.scrollTop = logDiv.scrollHeight;
-};
-
-const oldError = console.error;
-console.error = function(...args) {
-oldError(...args);
-logDiv.innerHTML += `🔴 ERROR: ${args.join(' ')}\n`;
+// Setup screen logging before loading meebo's brain script
+window.logToScreen = function(msg, isError = false) {
+const prefix = isError ? "🔴 ERROR: " : "🟢 ";
+logDiv.innerHTML += `${prefix}${msg}\n`;
 logDiv.scrollTop = logDiv.scrollHeight;
 };
 </script>
 
-<script type="module" src="meebo.js"></script>
+<!-- Run the bot brain -->
+<script src="meebo.js"></script>
 </body>
 </html>
 

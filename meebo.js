@@ -1,15 +1,12 @@
-// meebo.js - A Matrix Learning Bot with persistent memory and an emergency reset command
-import { createMatrixClient } from 'https://jsdelivr.net';
+// meebo.js - Matrix Browser Native Edition
 
 // 1. Bot Configuration
 const HOMESERVER_URL = "https://matrix.org";
 const BOT_USERNAME = "@meebo:matrix.org";
-const BOT_PASSWORD = "ColdLeg6932";
+const BOT_PASSWORD = "YOUR_MEEBO_PASSWORD_HERE";
+const OWNER_USERNAME = "@your_username:matrix.org";
 
-// 🔐 SECURITY: Replace this with your exact Matrix username so only YOU can reset Meebo
-const OWNER_USERNAME = "@meebo:matrix.org";
-
-// 2. Meebo's Brain
+// 2. Meebo's Brain & Storage
 let brain = {};
 const STORAGE_KEY = `meebo_brain_${BOT_USERNAME}`;
 
@@ -18,12 +15,12 @@ try {
 const savedBrain = localStorage.getItem(STORAGE_KEY);
 if (savedBrain) {
 brain = JSON.parse(savedBrain);
-console.log(`🧠 Meebo loaded ${Object.keys(brain).length} word-associations.`);
+window.logToScreen(`Loaded ${Object.keys(brain).length} word-associations from memory.`);
 } else {
-console.log("🧠 Meebo's brain is empty.");
+window.logToScreen("Brain is currently empty. Ready to learn!");
 }
 } catch (e) {
-console.error("Failed to load brain:", e);
+window.logToScreen("Failed to load brain from storage.", true);
 }
 }
 
@@ -31,30 +28,25 @@ function saveBrain() {
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(brain));
 } catch (e) {
-console.error("Failed to save brain:", e);
+window.logToScreen("Failed to save brain.", true);
 }
 }
 
-// 🚨 THE EMERGENCY RESET FUNCTION
 function eraseBrain() {
-brain = {}; // Clear RAM
-localStorage.removeItem(STORAGE_KEY); // Wipe browser hard drive storage
-console.log("🚨 EMERGENCY WIPE EXECUTE: Meebo's brain has been entirely erased.");
+brain = {};
+localStorage.removeItem(STORAGE_KEY);
+window.logToScreen("EMERGENCY WIPE: Memory erased!");
 }
 
 function learnFromSentence(text) {
-// If the message contains the secret wipe command, don't learn it
 if (text.toLowerCase().includes("wipe memory")) return;
-
 const words = text.toLowerCase().trim().split(/\s+/);
 if (words.length < 2) return;
 
 for (let i = 0; i < words.length - 1; i++) {
 const currentWord = words[i];
 const nextWord = words[i + 1];
-if (!brain[currentWord]) {
-brain[currentWord] = [];
-}
+if (!brain[currentWord]) brain[currentWord] = [];
 if (!brain[currentWord].includes(nextWord)) {
 brain[currentWord].push(nextWord);
 }
@@ -83,20 +75,22 @@ currentWord = nextWord;
 return sentence.join(" ");
 }
 
-// 3. Initialize and Start Meebo
-const client = createMatrixClient({
+// 3. Start the Global Matrix Client
+const client = globalThis.matrixcs.createClient({
 baseUrl: HOMESERVER_URL,
 userId: BOT_USERNAME
 });
 
 async function startMeebo() {
 loadBrain();
+window.logToScreen("Attempting login to Matrix...");
 
-console.log("Meebo is logging in...");
+// Authenticate with server
 await client.login("m.login.password", { user: BOT_USERNAME, password: BOT_PASSWORD });
-await client.startClient({ initialSyncLimit: 5 });
+window.logToScreen("Login successful! Starting sync...");
 
-console.log("🚀 Meebo is active and fully protected.");
+await client.startClient({ initialSyncLimit: 5 });
+window.logToScreen("Meebo is fully active and listening for room invites/messages!");
 
 client.on("Room.timeline", function(event, room, toStartOfTimeline) {
 if (toStartOfTimeline) return;
@@ -107,7 +101,9 @@ const messageText = event.getContent().body;
 if (!messageText) return;
 const sender = event.getSender();
 
-// 🚨 CHECK FOR EMERGENCY WIPE COMMAND
+window.logToScreen(`Heard in room: "${messageText}"`);
+
+// Emergency Wipe Check
 if (messageText.toLowerCase() === "meebo wipe memory") {
 if (sender === OWNER_USERNAME) {
 eraseBrain();
@@ -115,19 +111,22 @@ client.sendTextMessage(room.roomId, "🚨 Memory entirely wiped. I am a blank sl
 } else {
 client.sendTextMessage(room.roomId, "❌ Access Denied: You are not my creator.");
 }
-return; // Stop processing this message immediately
+return;
 }
 
-// Train Meebo if it's a normal message
+// Training
 learnFromSentence(messageText);
 
-// If someone addresses Meebo
+// Reply Trigger
 if (messageText.toLowerCase().includes("meebo")) {
 const reply = generateReply(messageText);
 client.sendTextMessage(room.roomId, reply);
+window.logToScreen(`Replied with: "${reply}"`);
 }
 });
 }
 
-startMeebo().catch(err => console.error("Meebo encountered an error:", err));
+startMeebo().catch(err => {
+window.logToScreen(err.message || err, true);
+});
 
