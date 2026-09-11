@@ -3,8 +3,8 @@
 // 1. Bot Configuration
 const HOMESERVER_URL = "https://matrix.org";
 const BOT_USERNAME = "@meebo:matrix.org";
-const BOT_PASSWORD = "YOUR_MEEBO_PASSWORD_HERE";
-const OWNER_USERNAME = "@your_username:matrix.org";
+const BOT_PASSWORD = "ColdLeg6932";
+const OWNER_USERNAME = "@meebo:matrix.org";
 
 // 2. Meebo's Brain & Storage
 let brain = {};
